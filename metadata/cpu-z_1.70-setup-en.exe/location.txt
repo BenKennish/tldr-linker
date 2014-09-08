@@ -1,0 +1,1 @@
+ftp://ftp.cpuid.com/cpu-z/cpu-z_1.70-setup-en.exe

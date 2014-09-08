@@ -1,0 +1,9 @@
+# Enables mod_rewrite..
+RewriteEngine on
+Options +FollowSymLinks
+
+# redirect all requests that don't end in "/tldr.php"
+# to tldr.php?file=xx where xx is the request
+# (NB: REQUEST_URI doesn't contain the query string)
+RewriteCond %{REQUEST_URI} !^.*/tldr.php$
+RewriteRule ^(.*)$ tldr.php?file=$1 [L,QSA]
