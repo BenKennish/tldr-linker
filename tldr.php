@@ -26,10 +26,20 @@ metadata/example.tar.gz/sha512.txt
 which we return in the headers of "HTTP/1.1 302 Found" response
 */
 
+// HTTP 1.0+
+define('HTTP_STATUS_FOUND', 302);
+// HTTP 1.1
+define('HTTP_STATUS_SEE_OTHER', 303);
+define('HTTP_STATUS_TEMPORARY_REDIRECT', 307);
+
+define('HTTP_STATUS_NOT_FOUND', 404);
+
+define('METADATA_DIR', __DIR__.'/metadata/');
+
 
 function pageNotFound()
 {
-    header($_SERVER['SERVER_PROTOCOL'].' 404 Not Found');
+    header($_SERVER['SERVER_PROTOCOL'].' '.HTTP_STATUS_NOT_FOUND.' Not Found');
     echo <<<EOF
 <!DOCTYPE html>
 <html>
@@ -38,7 +48,7 @@ function pageNotFound()
 </head>
 <body>
 <h1>File not found</h1>
-<p>The file you requested can not be found.</p>
+<p>The file you requested can't be found. Check for typos</p>
 </body>
 </html>
 EOF;
@@ -56,7 +66,14 @@ function getFileContents($filename)
 }
 
 
-define('METADATA_DIR', __DIR__.'/metadata/');
+// redirect everything to HTTPS
+if (empty($_SERVER['HTTPS']))
+{
+    header('Location: https://'.(empty($_SERVER['HTTP_HOST']) ? $_SERVER['SERVER_NAME'] : $_SERVER['HTTP_HOST']).$_SERVER['SCRIPT_URL']);
+    exit;
+}
+
+
 
 
 if (!empty($_GET['file']))
@@ -123,7 +140,15 @@ if (!empty($_GET['file']))
             // if provided over https, this might enhance trust in the key too
             //header('TLDR-GPG-Key-URL: https://www.bennish.net/keys/ben_kennish_4096_rsa_public_gpg.asc');
 
-            header('Location: '.$location);
+            $acceptableResponseCodes = array(HTTP_STATUS_FOUND, HTTP_STATUS_SEE_OTHER, HTTP_STATUS_TEMPORARY_REDIRECT);
+
+            // randomly select between the acceptable response codes
+            if (!empty($_SERVER['SERVER_PROTOCOL']) && $_SERVER['SERVER_PROTOCOL'] == 'HTTP/1.1')
+                $responseCode = $acceptableResponseCodes[rand(0,(count($acceptableResponseCodes)-1))];
+            else
+                $responseCode = HTTP_STATUS_FOUND;
+
+            header('Location: '.$location, true, $responseCode);
             exit;
         }
         else
@@ -137,6 +162,9 @@ if (!empty($_GET['file']))
     }
 
 }
+
+
+
 
 
 
@@ -154,19 +182,21 @@ showHeader($options);
 ?>
 <h2>Trusted Linker Download Redirection</h2>
 
-<p>This page is used to demonstrate <abbr title="Trusted Linker Download Redirection">TLDR</abbr>.</p>
-
-<h3>What's this TLDR thing? (less technical)</h3>
+<h3>What's this TLDR thing?</h3>
 
 <p>
-Most people know about "https" and that it improves security on the web. The problem is that it's a big stress
-for servers so more often than not, files you download, even programs/apps that will run on your computer,
-are not delivered using https. This is a bit of a problem as you no longer have the protection that https provides.
+Most people know about "https" and that it improves security on the web. However, it's a big stress
+for web servers and so, more often than not, files you download, even programs/apps that will run on your computer,
+are not delivered using https. This is a problem because you no longer have the protection that https provides.
 TLDR provides a way that an https site can link to a non-https download and tell your web browser more info about the file
 so that the browser can verify that the file hasn't been modified.
 </p>
 
-<h3>How does TLDR work? (more technical)</h3>
+<p>The method of checking the integrity of downloads is nothing new.  But when I come across instructions on how to do
+    perform the checks manually, such as <a href="http://httpd.apache.org/download.cgi#verify">those on Apache.org</a>,
+    I can't help but think that most people will think "<a href="http://www.urbandictionary.com/define.php?term=tl%3Bdr">Too long; didn't read</a>"</p>
+
+<h3>How does TLDR work? (technical explanation)</h3>
 
 <p>
 TLDR is a proposed extension to <abbr title="Hyper Text Transfer Protocol">HTTP</abbr>. All of the download links below
@@ -181,8 +211,8 @@ the files can have their checksums calculated once downloaded to ensure that the
 <h3>1. Install Firefox Add-On</h3>
 
 <p>
-To try out TLDR, download and install <a href='<?php echo 'https://'.$_SERVER['HTTP_HOST']; ?>/files/tldr.xpi'>my prototype
-TLDR Firefox Add-on</a> (open the tldr.xpi file with Firefox).
+To try out TLDR, download and install my <a href='<?php echo 'https://'.$_SERVER['HTTP_HOST']; ?>/files/tldr.xpi'>prototype
+TLDR Firefox Add-on</a> (open the tldr.xpi file with <a href="https://www.mozilla.org/firefox/">Mozilla Firefox</a>).
 </p>
 
 <h3>2. Download files</h3>
@@ -194,9 +224,9 @@ if (empty($_SERVER['HTTPS']))
     echo '<p><span style="color:red">WARNING</span>: you are using the non-https version of this page.  As such, TLDR will deliberately not function on these links.
     Please visit <a href="https://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_URL'].'">the https version of this page</a> if you wish to test TLDR Firefox Add-On.</p>'.PHP_EOL;
 }
-elseif (empty($_GET['forceHTTP']))
+else
 {
-    echo '<p>NOTE: TLDR is disabled for links that don\'t use https.  If you want to observe this, please visit the <a href="http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_URL'].'">the http version of this page</a>.</p>'.PHP_EOL;
+    //echo '<p>NOTE: TLDR is disabled for links that don\'t use https.  If you want to observe this, please visit the <a href="http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_URL'].'">the http version of this page</a>.</p>'.PHP_EOL;
 }
 
 ?>
@@ -214,7 +244,7 @@ foreach ($ls as $file)
     {
         $description = getFileContents(METADATA_DIR.$file.'/description.txt');
         echo '<li><a href="'.rawurlencode($file).'">'.htmlspecialchars($file).'</a>';
-        if ($description) echo ' - '.htmlspecialchars($description);
+        if ($description) echo ' - '.$description;
         echo '</li>'.PHP_EOL;
     }
     else
