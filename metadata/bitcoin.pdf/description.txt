@@ -1,1 +1,1 @@
-Bitcoin info doc in PDF format (NB: if a plugin is used, the TLDR add-on will be bypassed)
+Bitcoin info doc in PDF format (NB: if a PDF plugin is used, the TLDR add-on will be bypassed)

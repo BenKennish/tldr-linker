@@ -69,7 +69,7 @@ function getFileContents($filename)
 // redirect everything to HTTPS
 if (empty($_SERVER['HTTPS']))
 {
-    header('Location: https://'.(empty($_SERVER['HTTP_HOST']) ? $_SERVER['SERVER_NAME'] : $_SERVER['HTTP_HOST']).$_SERVER['SCRIPT_URL']);
+    header('Location: https://'.(empty($_SERVER['HTTP_HOST']) ? $_SERVER['SERVER_NAME'] : $_SERVER['HTTP_HOST']).$_SERVER['REQUEST_URI']);
     exit;
 }
 
@@ -104,10 +104,10 @@ if (!empty($_GET['file']))
 
             // -------
             // Checksums - part one
-            if ($md5)    header('TLDR-Checksum-MD5: '.$md5);
-            if ($sha1)   header('TLDR-Checksum-SHA1: '.$sha1);
-            if ($sha256) header('TLDR-Checksum-SHA256: '.$sha256);
-            if ($sha512) header('TLDR-Checksum-SHA512: '.$sha512);
+            if ($md5)    header('Location-Checksum-MD5: '.$md5);
+            if ($sha1)   header('Location-Checksum-SHA1: '.$sha1);
+            if ($sha256) header('Location-Checksum-SHA256: '.$sha256);
+            if ($sha512) header('Location-Checksum-SHA512: '.$sha512);
 
             // ------
             // GPG signature - part two.. do this bit later
@@ -128,17 +128,17 @@ if (!empty($_GET['file']))
             //
             // see: http://mirror.catn.com/pub/centos/7.0.1406/isos/x86_64/sha256sum.txt.asc
 
-            //header('TLDR-GPG-Signature: https://www.bennish.net/sigs/'.rawurlencode($_GET[file]).'.sig');
-            //header('TLDR-GPG-Signature: https://www.bennish.net/sigs/'.rawurlencode($_GET[file]).'.asc');
+            //header('Location-GPG-Signature: https://www.bennish.net/sigs/'.rawurlencode($_GET[file]).'.sig');
+            //header('Location-GPG-Signature: https://www.bennish.net/sigs/'.rawurlencode($_GET[file]).'.asc');
 
             // not entirely necessary - the key ID can be determined from the sig file
             // but perhaps if the sig file above is remotely hosted, we can enhance trust by specifying the
             // expected signer's key ID
-            //header('TLDR-GPG-Key-ID: 0x4F25E3B6');
+            //header('Location-GPG-Key-ID: 0x4F25E3B6');
 
             // we can also provide a URL from where to fetch the public key
             // if provided over https, this might enhance trust in the key too
-            //header('TLDR-GPG-Key-URL: https://www.bennish.net/keys/ben_kennish_4096_rsa_public_gpg.asc');
+            //header('Location-GPG-Key-URL: https://www.bennish.net/keys/ben_kennish_4096_rsa_public_gpg.asc');
 
             $acceptableResponseCodes = array(HTTP_STATUS_FOUND, HTTP_STATUS_SEE_OTHER, HTTP_STATUS_TEMPORARY_REDIRECT);
 
@@ -199,20 +199,69 @@ so that the browser can verify that the file hasn't been modified.
 <h3>How does TLDR work? (technical explanation)</h3>
 
 <p>
-TLDR is a proposed extension to <abbr title="Hyper Text Transfer Protocol">HTTP</abbr>. All of the download links below
-redirect (using a "302 Found" HTTP response) to a non-https URL where the file can be found and downloaded.  Special
-TLDR headers are sent within the 302 response which contain one or more checksums of the files (e.g.
-<a href="http://en.wikipedia.org/wiki/SHA-1">SHA1</a>).  With support from the web browser,
-the files can have their checksums calculated once downloaded to ensure that the file data is as expected.
+TLDR is a proposed extension to <abbr title="Hypertext Transfer Protocol">HTTP</abbr>. All of the download links below
+redirect (e.g. using a "302 Found" HTTP response) to a non-https URL where the file can be found and downloaded.  Special
+TLDR headers are sent within the response which contain one or more checksums of the file contents (e.g. using
+<a href="http://en.wikipedia.org/wiki/SHA-1">SHA1</a>).  With support from the web browser, the files can have their checksums
+calculated once downloaded to ensure that the file data is as expected.
 </p>
+
+<p>Please read <a href="//datatracker.ietf.org/doc/draft-bennish-http-tldr/">my Internet Draft submitted to the Internet Engineering Task Force (IETF)</a>.</p>
 
 <h2>Downloading files using TLDR</h2>
 
 <h3>1. Install Firefox Add-On</h3>
 
 <p>
-To try out TLDR, download and install my <a href='<?php echo 'https://'.$_SERVER['HTTP_HOST']; ?>/files/tldr.xpi'>prototype
-TLDR Firefox Add-on</a> (open the tldr.xpi file with <a href="https://www.mozilla.org/firefox/">Mozilla Firefox</a>).
+To try out TLDR, download and install <?php
+
+define ('RDF_FILE', '../files/tldr.update.rdf');
+
+/*
+// I wanted to do this nicely using SimpleXML but the rdf file is full of namespace bollocks and I CBA!
+
+if (file_exists(RDF_FILE))
+{
+    libxml_use_internal_errors(true);
+    $rdf = simplexml_load_file(RDF_FILE); //, null, null, 'em', true);
+}
+
+if (!empty($rdf))
+{
+    echo '</p>'.PHP_EOL;
+
+    echo '<pre>';
+    //var_dump($rdf);
+    var_dump($rdf->Description);
+    var_dump($rdf->Description->children('em', true)->children()->updates);
+    //var_dump($rdf->Description->{'em:updates'}->Seq->li->Description->{'em:version'});
+
+    foreach(libxml_get_errors() as $error)
+    {
+        echo "\t", $error->message;
+    }
+    echo '</pre>';
+
+    echo '<p>';
+}
+*/
+
+if (file_exists(RDF_FILE) && is_readable(RDF_FILE))
+{
+    $rdf = file_get_contents(RDF_FILE);
+    $matches = array();
+
+    if (preg_match('#<em:version>([0-9\.]+)</em:version>#', $rdf, $matches))
+    {
+        $version = $matches[1];
+        echo 'version '.hsc($version).' of ';
+    }
+}
+
+?> my <a href='<?php echo 'https://'.$_SERVER['HTTP_HOST']; ?>/files/tldr.xpi'>prototype
+TLDR Firefox Add-on</a> (open the tldr.xpi file with <a href="https://www.mozilla.org/firefox/">Mozilla Firefox</a>).  You may also
+<a href="https://addons.mozilla.org/en-US/firefox/addon/tldr-http/">download it from Mozilla's official site for Add-ons (AMO)</a> where it is currently
+awaiting review by Mozilla</a>.  NB: the Add-on does NOT currently work on Firefox for Android.
 </p>
 
 <h3>2. Download files</h3>
