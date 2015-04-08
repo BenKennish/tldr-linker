@@ -261,7 +261,7 @@ if (file_exists(RDF_FILE) && is_readable(RDF_FILE))
 ?> my <a href='<?php echo 'https://'.$_SERVER['HTTP_HOST']; ?>/files/tldr.xpi'>prototype
 TLDR Firefox Add-on</a> (open the tldr.xpi file with <a href="https://www.mozilla.org/firefox/">Mozilla Firefox</a>).  You may also
 <a href="https://addons.mozilla.org/en-US/firefox/addon/tldr-http/">download it from Mozilla's official site for Add-ons (AMO)</a> where it
-has been preliminarily review by Mozilla.  NB: the Add-on does not currently work with Firefox for Android.
+has been preliminarily reviewed by Mozilla.  NB: the Add-on does not currently work with Firefox for Android.
 </p>
 
 <h3>2. Download files</h3>
