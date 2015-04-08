@@ -206,7 +206,7 @@ TLDR headers are sent within the response which contain one or more checksums of
 calculated once downloaded to ensure that the file data is as expected.
 </p>
 
-<p>Please read <a href="//datatracker.ietf.org/doc/draft-bennish-http-tldr/">my Internet Draft submitted to the Internet Engineering Task Force (IETF)</a>.</p>
+<p>Please read <a href="//datatracker.ietf.org/doc/draft-bennish-httpbis-tldr/">my Internet Draft submitted to the Internet Engineering Task Force (IETF)</a>.</p>
 
 <h2>Downloading files using TLDR</h2>
 
@@ -260,8 +260,8 @@ if (file_exists(RDF_FILE) && is_readable(RDF_FILE))
 
 ?> my <a href='<?php echo 'https://'.$_SERVER['HTTP_HOST']; ?>/files/tldr.xpi'>prototype
 TLDR Firefox Add-on</a> (open the tldr.xpi file with <a href="https://www.mozilla.org/firefox/">Mozilla Firefox</a>).  You may also
-<a href="https://addons.mozilla.org/en-US/firefox/addon/tldr-http/">download it from Mozilla's official site for Add-ons (AMO)</a> where it is currently
-awaiting review by Mozilla</a>.  NB: the Add-on does NOT currently work on Firefox for Android.
+<a href="https://addons.mozilla.org/en-US/firefox/addon/tldr-http/">download it from Mozilla's official site for Add-ons (AMO)</a> where it
+has been preliminarily review by Mozilla.  NB: the Add-on does not currently work with Firefox for Android.
 </p>
 
 <h3>2. Download files</h3>
