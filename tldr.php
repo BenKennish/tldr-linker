@@ -308,13 +308,15 @@ foreach ($ls as $file)
 
 <p>For TLDR to be truly useful, web browsers should support it natively and websites should implement it for their download links.</p>
 
-<p>If you run a website that provides links to downloads, please consider implementing TLDR.  If you need help with this, take a look at <a href="https://github.com/BenKennish/tldr-linker">the GitHub repo containing the PHP source code of this very web page</a></p>
+<p>If you run a website that provides links to downloads, please consider implementing TLDR.  If you need help with this, take a look at <a href="https://github.com/BenKennish/tldr-linker">the GitHub repo containing the PHP source code of this very web page</a>.</p>
 
 <p>If you can write add-ons for web browsers, why not write one that will add TLDR support to your favourite web browser?<p>
 
 <p>Finally, why not write to the maker of your favourite web browser asking them to include TLDR support natively?<p>
 
-<p>Thanks for reading, Ben</p>
+<p>Thanks for reading,</p>
+
+<p>Ben</p>
 
 <?php
 
