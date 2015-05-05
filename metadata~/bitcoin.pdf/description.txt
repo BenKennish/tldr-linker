@@ -1,0 +1,1 @@
+Bitcoin info doc in PDF format <b>(NB: if a PDF plugin is used, the TLDR add-on will be bypassed)</b>

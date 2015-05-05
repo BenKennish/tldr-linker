@@ -185,7 +185,7 @@ showHeader($options);
 <h3>What's this TLDR thing?</h3>
 
 <p>
-Most people know about "https" and that it improves security on the web. However, it's a big stress
+Most people know about "https" and that it improves security on the web. However, it's an extra stress
 for web servers and so, more often than not, files you download, even programs/apps that will run on your computer,
 are not delivered using https. This is a problem because you no longer have the protection that https provides.
 TLDR provides a way that an https site can link to a non-https download and tell your web browser more info about the file
@@ -194,7 +194,7 @@ so that the browser can verify that the file hasn't been modified.
 
 <p>The method of checking the integrity of downloads is nothing new.  But when I come across instructions on how to do
     perform the checks manually, such as <a href="http://httpd.apache.org/download.cgi#verify">those on Apache.org</a>,
-    I can't help but think that most people will think "<a href="http://www.urbandictionary.com/define.php?term=tl%3Bdr">Too long; didn't read</a>"</p>
+    I can't help but think that most people will think "<a href="http://www.urbandictionary.com/define.php?term=tl%3Bdr">Too long; didn't read</a>" (TL;DR)</p>
 
 <h3>How does TLDR work? (technical explanation)</h3>
 
@@ -206,7 +206,7 @@ TLDR headers are sent within the response which contain one or more checksums of
 calculated once downloaded to ensure that the file data is as expected.
 </p>
 
-<p>Please read <a href="//datatracker.ietf.org/doc/draft-bennish-httpbis-tldr/">my Internet Draft submitted to the Internet Engineering Task Force (IETF)</a>.</p>
+<p>If you want to find out more, please read <a href="//datatracker.ietf.org/doc/draft-bennish-httpbis-tldr/">my Internet Draft submitted to the Internet Engineering Task Force (IETF)</a>.</p>
 
 <h2>Downloading files using TLDR</h2>
 
@@ -264,7 +264,9 @@ TLDR Firefox Add-on</a> (open the tldr.xpi file with <a href="https://www.mozill
 has been preliminarily reviewed by Mozilla.  NB: the Add-on does not currently work with Firefox for Android.
 </p>
 
-<h3>2. Download files</h3>
+<h3>2. Download files for testing</h3>
+
+<p>These download links all use TLDR so you can use them to test out the Firefox Add-On...</p>
 
 <?php
 
@@ -301,6 +303,18 @@ foreach ($ls as $file)
 }
 ?>
 </ul>
+
+<h2>So what now?</h2>
+
+<p>For TLDR to be truly useful, web browsers should support it natively and websites should implement it for their download links.</p>
+
+<p>If you run a website that provides links to downloads, please consider implementing TLDR.  If you need help with this, take a look at <a href="https://github.com/BenKennish/tldr-linker">the GitHub repo containing the PHP source code of this very web page</a></p>
+
+<p>If you can write add-ons for web browsers, why not write one that will add TLDR support to your favourite web browser?<p>
+
+<p>Finally, why not write to the maker of your favourite web browser asking them to include TLDR support natively?<p>
+
+<p>Thanks for reading, Ben</p>
 
 <?php
 
